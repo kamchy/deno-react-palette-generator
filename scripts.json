@@ -1,0 +1,18 @@
+{
+  "scripts": {
+    "build": {
+       "cmd": "deno bundle app.tsx app.bundle.js",
+      "desc": "builds app.tsx to a bundle",
+      "watch":true
+    },
+       
+    "server": {
+      "cmd": "deno run --allow-net --allow-read https://deno.land/std/http/file_server.ts",
+      "desc": "run http server",
+      "watch": false
+    }
+  },
+  "watcher": {
+    "skip": ["app.bundle.js"]
+  }
+}
