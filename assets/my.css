@@ -1,11 +1,22 @@
 .colorbox {
-  display: inline;
-  padding: 0.2em;
-  margin-right: 0.2em;
-  font-size: 0.75em;
-  height: 2em;
-}
+  display: flex;
+  padding: 0.5em;
 
+  font-size: 0.75em;
+  /*! height: 2em; */
+  flex-flow: column;
+  justify-content: space-between;
+
+}
+.colorbox span {
+
+
+}
+.palette {
+  display: grid;
+  grid-template-columns: repeat(7, 100px);
+  grid-gap:  10px;
+}
 .hero > .panel {
   display: flex;
 }

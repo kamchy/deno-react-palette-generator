@@ -1,5 +1,11 @@
 import { React, ReactDOM, useState } from "./deps.ts";
-import { colToHsl, genN, inverse, lighter } from "./colors.ts";
+import {
+  colToHsl,
+  generateAbsoluteGradient,
+  generatePalette,
+  genN,
+  inverse,
+} from "./colors.ts";
 import { md5sum } from "./hash.ts";
 
 type AppData = {
@@ -62,42 +68,60 @@ const ColorBox = ({ wi, hi, color }: ColorBoxType) => (
       style={{
         color: inverse(color),
         backgroundColor: color,
-        padding: "10px",
       }}
     >
-      {colToHsl(color).map((i) => i.toFixed(0)).join(" ")}
+      hsl({colToHsl(color).map((i) => i.toFixed(0)).join(",")})
+    </span>
+    <span
+      style={{
+        color: inverse(color),
+        backgroundColor: color,
+      }}
+    >
+      {color}
     </span>
   </div>
 );
 
-type PaletteData = {
-  data: string;
-  count: number;
-};
-
-const Palette = function ({ data, count }: PaletteData) {
+const Palette = function (
+  { colors }: { colors: string[] },
+) {
   return (
-    <div>
-      {genN(data, count).map(function (c, idx) {
-        return <ColorBox key={idx} color={c} />;
-      })}
+    <div className="palette">
+      {colors.map(
+        function (c, idx) {
+          return <ColorBox key={idx} color={c} />;
+        },
+      )}
     </div>
   );
 };
 
 const MD5 = function ({ data }: { data: string }) {
   return (
-    <h2>{md5sum(data)}</h2>
+    <strong>{md5sum(data)}</strong>
   );
 };
 const App = (ad: AppData) => {
   const [input_string, setInputString] = useState(ad.input);
-  console.log(typeof setInputString);
+
+  const baseCount = 5;
+  const [baseSaturation, baseLightness] = [80, 50];
+  const colors = genN({
+    data: input_string,
+    count: baseCount,
+    baseSaturation,
+    baseLightness,
+  });
+  console.log("colors are: ", colors);
+  const gradientSize = 7;
+  const middleColor = colors[Math.round(colors.length / 2)];
+
   return (
     <div>
       <Hero ad={ad} />
       <section>
-        <h1>Input</h1>
+        <h2>Take some input</h2>
         <p>
           Colors generator uses your input (text you write below) to generate
           images, colors and palletes.
@@ -110,11 +134,47 @@ const App = (ad: AppData) => {
         />
       </section>
       <section>
-        <h1>Generated data</h1>
-        <p>Your input is {input_string}</p>
+        <h2>Generate data</h2>
+        <p>First, let's calculate md5 sum of your input:</p>
         <MD5 data={input_string} />
-        <h2>Generated palette</h2>
-        <Palette data={input_string} count={5} />
+        <h2>Generate {baseCount} colors</h2>
+        <p>
+          Those colors' hue is taken from {baseCount}{" "}
+          consecutive pairs of hexadecimal digits from md5 sum. Saturation is
+          always {baseSaturation} and lightness is {baseLightness}
+        </p>
+        <Palette
+          colors={colors}
+        />
+      </section>
+      <section>
+        <h2>
+          Basic gradient
+        </h2>
+        <p>
+          This gradient is of size {gradientSize}
+          from first ({colors[0]}) and last ({colors[baseCount - 1]}) color.
+
+          Check how it is done{" "}
+          <a href="http://linkbroker.hu/stuff/kolorwheel.js/">here</a>
+        </p>
+        <Palette
+          colors={generatePalette(
+            colors[0],
+            colors[baseCount - 1],
+            gradientSize,
+          )}
+        />
+      </section>
+      <section>
+        <h2>Absolute gradient</h2>
+        <p>
+          This is absolute gradient from middle color ({middleColor}) of your
+          base colors.
+        </p>
+        <Palette
+          colors={generateAbsoluteGradient(middleColor, gradientSize)}
+        />
       </section>
     </div>
   );
