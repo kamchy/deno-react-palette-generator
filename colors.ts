@@ -65,6 +65,34 @@ export function generateAbsoluteGradient(c: string, n: number): string[] {
   );
   return res;
 }
+
+export function generateRelativeLightness(c: string, n: number): string[] {
+  const res: string[] = [];
+  const col = new KolorWheel(c);
+  col.l = 10;
+  col.rel(0, 0, 80, n).each(
+    function (this: KolorWheel) {
+      res.push(this.getHex());
+    },
+  );
+  return res;
+}
+export function sortedByHue(cs: string[]): string[] {
+  const kws = cs.map((i) => new KolorWheel(i));
+  kws.sort((k1, k2) => k2.h - k1.h);
+  return kws.map((kw) => kw.getHex());
+}
+
+export function generateShadeWithOpposite(c: string, n: number): string[] {
+  const res: string[] = [];
+  const ckw = new KolorWheel(c);
+  ckw.abs([ckw.h, ckw.h, ckw.h + 180], [100, 40, 100], 80, n).each(
+    function (this: KolorWheel) {
+      res.push(this.getHex());
+    },
+  );
+  return res;
+}
 export { colToHsl, darker, genN, inverse, light, lighter, updateLight };
 
 //console.log(genN("kamila", 5));
