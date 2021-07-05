@@ -6,6 +6,7 @@
   /*! height: 2em; */
   flex-flow: column;
   justify-content: space-between;
+  border-radius: 5px;
 
 }
 .colorbox span {
@@ -14,10 +15,11 @@
 }
 .palette {
   display: grid;
-  grid-template-columns: repeat(7, 100px);
+  grid-template-columns: repeat(5, 100px);
   grid-gap:  10px;
 }
 .hero > .panel {
   display: flex;
 }
+
 
