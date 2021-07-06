@@ -16,16 +16,12 @@ const inverse = (c: string) =>
 const light = (c: string) => new KolorWheel(c).l;
 const updateLight = (c: string, delta: number) => chCol(delta)(c);
 
-export type PaletteData = {
-  data: string;
-  count: number;
-  baseSaturation: number;
-  baseLightness: number;
-};
-
 const p = (...s: any) => console.log(...s);
 function genN(
-  { data, count, baseSaturation = 80, baseLightness = 50 }: PaletteData,
+  data: string,
+  count: number,
+  sat: number,
+  lig: number,
 ): string[] {
   const sumd = md5sum(data);
   p(sumd);
@@ -33,12 +29,12 @@ function genN(
   for (let i = 0; i < count; i++) {
     const idx = (i * 2) % sumd.length;
     const hue = sumd.substring(idx, idx + 2);
-    const hslvals = [parseInt(hue, 16), baseSaturation, baseLightness];
+    const hslvals = [parseInt(hue, 16), sat, lig];
 
     p(`> hue: ${hue}, idx: ${idx},  hlsa: ${hslvals}`);
     res.push(new KolorWheel(hslvals));
   }
-  return res.map((k) => k.getHex());
+  return sortedByHue(res.map((k) => k.getHex()));
 }
 
 export function generatePalette(
@@ -56,6 +52,8 @@ export function generatePalette(
   return res;
 }
 
+export const middleColor = (colors: string[]): string =>
+  colors[Math.round(colors.length / 2)];
 export function generateAbsoluteGradient(c: string, n: number): string[] {
   const res: string[] = [];
   (new KolorWheel(c)).abs(0, -1, -1, n).each(
@@ -94,7 +92,3 @@ export function generateShadeWithOpposite(c: string, n: number): string[] {
   return res;
 }
 export { colToHsl, darker, genN, inverse, light, lighter, updateLight };
-
-//console.log(genN("kamila", 5));
-//let t = Deno.args[0];
-//p(t, "encoded as ", genN(t, 10));

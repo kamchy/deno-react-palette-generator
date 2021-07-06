@@ -22,4 +22,6 @@
   display: flex;
 }
 
-
+.consumer {
+  border: 1px dashed #124588;
+}
