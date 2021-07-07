@@ -90,4 +90,20 @@ export function generateShadeWithOpposite(c: string, n: number): string[] {
   );
   return res;
 }
-export { colToHsl, darker, genN, inverse, light, lighter, updateLight };
+
+const lightBg = function (c: string, s: number = 50, l: number = 80): string {
+  let kw = new KolorWheel(c);
+  kw.s = 50;
+  kw.l = 90;
+  return kw.getHex();
+};
+export {
+  colToHsl,
+  darker,
+  genN,
+  inverse,
+  light,
+  lightBg,
+  lighter,
+  updateLight,
+};

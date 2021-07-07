@@ -162,8 +162,8 @@ const PaletteConsumer = function (
       <div style={{ display: open ? "block" : "None" }}>
         <canvas
           id="mycanva"
-          width="800"
-          height="600"
+          width="600"
+          height="300"
           ref={imageRef}
         >
           No canvas supported.
@@ -223,7 +223,7 @@ const App = (ad: AppData) => {
     paletteConfig;
 
   const [currentPalette, setCurrentPalette] = useState(
-    "BasicGradient" as PaletteName,
+    "BasicColors" as PaletteName,
   );
   const colors = genN(
     input_string,
@@ -282,7 +282,7 @@ const App = (ad: AppData) => {
         title="Basic gradient"
         description={"This gradient is of size " + gradientSize +
           "from first (" + colors[0] + " ) and last (" + colors[baseCount - 1] +
-          " color"}
+          ") color"}
         colors={paletteMap.get("BasicGradient")!}
       >
       </PaletteSection>

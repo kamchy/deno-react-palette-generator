@@ -37,7 +37,7 @@ export function createPaletteMap(
   );
   m.set(
     "BasicGradient",
-    generatePalette(colors[0], colors[baseCount = 1], gradientSize),
+    generatePalette(colors[0], colors[baseCount - 1], gradientSize),
   );
   m.set(
     "AbsoluteGradient",
