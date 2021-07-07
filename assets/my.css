@@ -28,15 +28,18 @@
 }
 
 .paletteList {
-  display: flex;
+  display: grid;
 
+  grid-template-columns: repeat(4,1fr);
+  grid-template-rows: 50% 49%;
+  /*! justify-items: center; */
 }
 .paletteName {
   padding: 0.5em;
   margin: 0.2em;
   border: 1px solid lightpink;
   border-radius: 10px;
-  width: 20em;
+  /*! width: 20em; */
 }
 
 .paletteName:hover {
