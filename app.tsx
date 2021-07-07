@@ -184,7 +184,6 @@ const PaletteLabel = (
   key={pname}
   onClick={(e: any) => {
     setName(pname);
-    console.log("Clicked palettelabel " + pname);
   }}
 >
   {pname}

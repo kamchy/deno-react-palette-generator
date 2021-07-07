@@ -16,7 +16,6 @@ const inverse = (c: string) =>
 const light = (c: string) => new KolorWheel(c).l;
 const updateLight = (c: string, delta: number) => chCol(delta)(c);
 
-const p = (...s: any) => console.log(...s);
 function genN(
   data: string,
   count: number,
@@ -24,7 +23,6 @@ function genN(
   lig: number,
 ): string[] {
   const sumd = md5sum(data);
-  p(sumd);
   const res = [];
   for (let i = 0; i < count; i++) {
     const idx = (i * 2) % sumd.length;

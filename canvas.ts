@@ -46,7 +46,6 @@ const randVal = (f: number, t: number): number =>
 const randElem = function <T>(arr: T[]): T {
   const i = randVal(0, arr.length);
   const el = arr[i];
-  console.log(`randElem:  arr.len=${arr.length} i=${i}`);
   return el;
 };
 
