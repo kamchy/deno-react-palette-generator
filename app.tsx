@@ -1,4 +1,12 @@
-import { React, ReactDOM, useState } from "./deps.ts";
+import {
+  React,
+  ReactDOM,
+  RefObject,
+  useEffect,
+  useRef,
+  useState,
+} from "./deps.ts";
+import { generateImage } from "./canvas.ts";
 import {
   createPaletteMap,
   highestHue,
@@ -107,6 +115,8 @@ const Palette = function (
 };
 
 type PaletteSectionType = {
+  paletteName: PaletteName;
+  current: PaletteName;
   title: string;
   description: string;
   colors: Palette;
@@ -114,11 +124,15 @@ type PaletteSectionType = {
 };
 
 const PaletteSection = function (
-  { title, description, colors, children }: PaletteSectionType,
+  { paletteName, current, title, description, colors, children }:
+    PaletteSectionType,
 ) {
   return (
-    <section className="section">
-      <h2>{title}</h2>
+    <section
+      className="section"
+      style={{ display: (current === paletteName) ? "block" : "none" }}
+    >
+      <h3>{title}</h3>
       <p>
         {description}
       </p>
@@ -139,49 +153,64 @@ const PaletteConsumer = function (
   { data, paletteName }: { data: string[]; paletteName: PaletteName },
 ) {
   const [open, setOpen] = useState(true);
+  const imageRef: any = useRef(null);
+  const redrawEffect = useEffect(
+    () => generateImage(data, imageRef.current?.getContext("2d")),
+  );
   return (
     <div className="consumer">
-      <label>
-        <input
-          type="checkbox"
-          checked={open}
-          onChange={(e) => setOpen(!open)}
-        />Show image generated with palette {paletteName}
-      </label>
       <div style={{ display: open ? "block" : "None" }}>
-        {data
-          ? data.map(
-            function (c, idx) {
-              return (<span key={idx}>{c}</span>);
-            },
-          )
-          : "No palette chosen"},
+        <canvas
+          id="mycanva"
+          width="800"
+          height="600"
+          ref={imageRef}
+        >
+          No canvas supported.
+        </canvas>
       </div>
     </div>
   );
 };
 
-const PaletteChoice = function (
-  { paletteMap }: { paletteMap: Map<PaletteName, Palette> },
-) {
-  const [name, setName] = useState(
-    "BasicGradient" as PaletteName,
-  );
+const PaletteLabel = (
+  { pname, setName, isCurrent }: {
+    pname: PaletteName;
+    setName: any;
+    isCurrent: boolean;
+  },
+) => (<div
+  className={isCurrent ? "paletteName currentPalette" : "paletteName"}
+  key={pname}
+  onClick={(e: any) => {
+    setName(pname);
+    console.log("Clicked palettelabel " + pname);
+  }}
+>
+  {pname}
+</div>);
 
+const PaletteChoice = function (
+  { paletteMap, current, setCurrent }: {
+    paletteMap: Map<PaletteName, Palette>;
+    current: PaletteName;
+    setCurrent: any;
+  },
+) {
   return (
     <div>
-      <input
-        list="palettes"
-        onChange={(e: any) => setName(e.target.value)}
-        type="text"
-      />
-      <label>{name}</label>
-      <datalist id="palettes">
-        {Array.from(paletteMap.keys()).map((
-          k,
-        ) => (<option key={k} value={k} />))}
-      </datalist>
-      <PaletteConsumer data={paletteMap.get(name)!} paletteName={name} />
+      <h2>
+        Choose your favourite palette and have an image generated automatically!
+      </h2>
+      <div className="paletteList">
+        {Array.from(paletteMap.keys()).map((n) =>
+          PaletteLabel({
+            pname: n,
+            setName: setCurrent,
+            isCurrent: n === current,
+          })
+        )}
+      </div>
     </div>
   );
 };
@@ -193,6 +222,9 @@ const App = (ad: AppData) => {
   const { baseCount, gradientSize, baseSaturation, baseLightness } =
     paletteConfig;
 
+  const [currentPalette, setCurrentPalette] = useState(
+    "BasicGradient" as PaletteName,
+  );
   const colors = genN(
     input_string,
     baseCount,
@@ -217,14 +249,11 @@ const App = (ad: AppData) => {
           placeholder="I love cats"
           change={(s: string) => setInputString(s)}
         />
-      </section>
-      <section>
-        <h2>Generate data</h2>
         <p>First, let's calculate md5 sum of your input:</p>
         <MD5 data={input_string} />
-        <h2>Generate {baseCount} colors</h2>
         <p>
-          Those colors' hue is taken from {baseCount}{" "}
+          Next, let's generate {baseCount}{" "}
+          colors. Those colors' hua is taken from {baseCount}
           consecutive pairs of hexadecimal digits from md5 sum. Saturation is
           always {baseSaturation} and lightness is {baseLightness}
         </p>
@@ -232,8 +261,24 @@ const App = (ad: AppData) => {
           colors={colors}
         />
       </section>
-      <PaletteChoice paletteMap={paletteMap} />
+
+      <PaletteChoice
+        paletteMap={paletteMap}
+        current={currentPalette}
+        setCurrent={setCurrentPalette}
+      />
+
       <PaletteSection
+        paletteName="BasicColors"
+        current={currentPalette}
+        title="Initial colors"
+        description={"Original generated colors list"}
+        colors={paletteMap.get("BasicColors")!}
+      >
+      </PaletteSection>
+      <PaletteSection
+        paletteName="BasicGradient"
+        current={currentPalette}
         title="Basic gradient"
         description={"This gradient is of size " + gradientSize +
           "from first (" + colors[0] + " ) and last (" + colors[baseCount - 1] +
@@ -241,28 +286,34 @@ const App = (ad: AppData) => {
         colors={paletteMap.get("BasicGradient")!}
       >
       </PaletteSection>
-      <PaletteConsumer
-        data={paletteMap.get("BasicGradient")!}
-        paletteName={"BasicGradient"}
-      />
 
       <PaletteSection
+        paletteName="AbsoluteGradient"
+        current={currentPalette}
         title="Absolute gradient"
         description={" This is absolute gradient from middle color (" +
           middleColor(colors) + ") of your base colors."}
         colors={paletteMap.get("AbsoluteGradient")!}
       />
       <PaletteSection
+        paletteName="RelativeLightness"
+        current={currentPalette}
         title="Relative lightness"
         description={"This palette is generated by manipulating lightness from a color with highest hue (" +
           highestHue(colors) + ") of your base colors."}
         colors={paletteMap.get("RelativeLightness")!}
       />
       <PaletteSection
+        current={currentPalette}
+        paletteName="HueAndOpposite"
         title="Hue and opposite"
         description={" This palette is generated by manipulating lightness from a color with highest hue (" +
           highestHue + ") of your base colors."}
         colors={paletteMap.get("HueAndOpposite")!}
+      />
+      <PaletteConsumer
+        data={paletteMap.get(currentPalette)!}
+        paletteName={currentPalette}
       />
     </div>
   );

@@ -25,3 +25,24 @@
 .consumer {
   border: 1px dashed #124588;
 }
+
+.paletteList {
+  display: flex;
+
+}
+.paletteName {
+  padding: 0.5em;
+  margin: 0.2em;
+  border: 1px solid lightpink;
+  border-radius: 10px;
+  width: 20em;
+}
+
+.paletteName:hover {
+  background-color: linen;
+
+}
+
+.currentPalette {
+  background-color: lightpink;
+}

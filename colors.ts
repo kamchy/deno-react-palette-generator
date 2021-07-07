@@ -31,7 +31,6 @@ function genN(
     const hue = sumd.substring(idx, idx + 2);
     const hslvals = [parseInt(hue, 16), sat, lig];
 
-    p(`> hue: ${hue}, idx: ${idx},  hlsa: ${hslvals}`);
     res.push(new KolorWheel(hslvals));
   }
   return sortedByHue(res.map((k) => k.getHex()));
